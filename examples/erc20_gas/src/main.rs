@@ -63,14 +63,14 @@ async fn main() -> Result<()> {
         },
     );
 
-    let balance_before = balance_of(account, &mut cache_db).unwrap();
+    let balance_before = balance_of(account, &mut cache_db).unwrap().into();
     println!("Balance before: {balance_before}");
 
     // Transfer 100 tokens from account to account_to
     // Magic happens here with custom handlers
     transfer(account, account_to, hundred_tokens, &mut cache_db)?;
 
-    let balance_after = balance_of(account, &mut cache_db)?;
+    let balance_after = balance_of(account, &mut cache_db)?.into();
     println!("Balance after: {balance_after}");
 
     Ok(())
@@ -88,7 +88,7 @@ where
     ERROR: From<InvalidTransaction> + From<InvalidHeader> + From<<CTX::Db as Database>::Error>,
 {
     let sender_balance_slot = erc_address_storage(sender);
-    let sender_balance = context.journal().sload(TOKEN, sender_balance_slot)?.data;
+    let sender_balance = context.journal().sload(TOKEN, sender_balance_slot)?.data.word;
 
     if sender_balance < amount {
         return Err(ERROR::from(
@@ -97,6 +97,7 @@ where
     }
     // Subtract the amount from the sender's balance
     let sender_new_balance = sender_balance.saturating_sub(amount);
+    let sender_new_balance = sender_new_balance.into(); // Convert to flagged storage because erc20 has no private state
     context
         .journal()
         .sstore(TOKEN, sender_balance_slot, sender_new_balance)?;

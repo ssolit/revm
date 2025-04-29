@@ -108,7 +108,9 @@ impl<N: Network, P: Provider<N>> DatabaseAsyncRef for AlloyDB<N, P> {
             .provider
             .get_storage_at(address, index)
             .block_id(self.block_number)
-            .await?)
+            .await?
+            .into(),
+        )
     }
 }
 

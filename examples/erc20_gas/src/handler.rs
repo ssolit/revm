@@ -79,7 +79,8 @@ where
             .journal()
             .sload(TOKEN, account_balance_slot)
             .map(|v| v.data)
-            .unwrap_or_default();
+            .unwrap_or_default()
+            .into();
 
         if account_balance < max_balance_spending && !is_balance_check_disabled {
             return Err(InvalidTransaction::LackOfFundForMaxFee {
