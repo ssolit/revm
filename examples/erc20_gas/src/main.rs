@@ -63,14 +63,14 @@ async fn main() -> Result<()> {
         },
     );
 
-    let balance_before = balance_of(account, &mut cache_db).unwrap();
+    let balance_before = balance_of(account, &mut cache_db).unwrap().into();
     println!("Balance before: {balance_before}");
 
     // Transfer 100 tokens from account to account_to
     // Magic happens here with custom handlers
     transfer(account, account_to, hundred_tokens, &mut cache_db)?;
 
-    let balance_after = balance_of(account, &mut cache_db)?;
+    let balance_after = balance_of(account, &mut cache_db)?.into();
     println!("Balance after: {balance_after}");
 
     Ok(())

@@ -186,7 +186,7 @@ pub fn sload<WIRE: InterpreterTypes, H: Host + ?Sized>(
         interpreter,
         gas::sload_cost(interpreter.runtime_flag.spec_id(), value.is_cold)
     );
-    *index = value.data;
+    *index = value.data.into();
 }
 
 pub fn sstore<WIRE: InterpreterTypes, H: Host + ?Sized>(
@@ -197,7 +197,7 @@ pub fn sstore<WIRE: InterpreterTypes, H: Host + ?Sized>(
 
     popn!([index, value], interpreter);
 
-    let Some(state_load) = host.sstore(interpreter.input.target_address(), index, value) else {
+    let Some(state_load) = host.sstore(interpreter.input.target_address(), index, value.into()) else {
         interpreter
             .control
             .set_instruction_result(InstructionResult::FatalExternalError);
@@ -243,7 +243,7 @@ pub fn tstore<WIRE: InterpreterTypes, H: Host + ?Sized>(
 
     popn!([index, value], interpreter);
 
-    host.tstore(interpreter.input.target_address(), index, value);
+    host.tstore(interpreter.input.target_address(), index, value.into());
 }
 
 /// EIP-1153: Transient storage opcodes
@@ -257,7 +257,7 @@ pub fn tload<WIRE: InterpreterTypes, H: Host + ?Sized>(
 
     popn_top!([], index, interpreter);
 
-    *index = host.tload(interpreter.input.target_address(), *index);
+    *index = host.tload(interpreter.input.target_address(), *index).into();
 }
 
 pub fn log<const N: usize, H: Host + ?Sized>(

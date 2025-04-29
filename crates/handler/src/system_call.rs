@@ -159,7 +159,7 @@ mod tests {
                 .get(&StorageKey::from(0))
                 .map(|slot| slot.present_value)
                 .unwrap_or_default(),
-            U256::from_be_bytes(block_hash.0),
+            U256::from_be_bytes(block_hash.0).into(),
             "State is not updated {state:?}"
         );
     }
