@@ -88,7 +88,7 @@ where
     ERROR: From<InvalidTransaction> + From<InvalidHeader> + From<<CTX::Db as Database>::Error>,
 {
     let sender_balance_slot = erc_address_storage(sender);
-    let sender_balance = context.journal().sload(TOKEN, sender_balance_slot)?.data;
+    let sender_balance = context.journal().sload(TOKEN, sender_balance_slot)?.data.word;
 
     if sender_balance < amount {
         return Err(ERROR::from(
@@ -97,6 +97,7 @@ where
     }
     // Subtract the amount from the sender's balance
     let sender_new_balance = sender_balance.saturating_sub(amount);
+    let sender_new_balance = sender_new_balance.into(); // Convert to flagged storage because erc20 has no private state
     context
         .journal()
         .sstore(TOKEN, sender_balance_slot, sender_new_balance)?;
